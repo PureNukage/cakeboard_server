@@ -78,6 +78,8 @@ switch (msgid)
 		buffer_write(buffer_server_totalusers,buffer_string,compiledtextboxlist)
 		buffer_write(buffer_server_totalusers,buffer_string,compiledtimelist)
 		buffer_write(buffer_server_totalusers,buffer_string,compiledcheckmarklist)
+		buffer_write(buffer_server_totalusers,buffer_u32,ds_list_size(socketlist)+1)
+		show_debug_message("Socketlist: " + string(ds_list_size(socketlist)))
 		network_send_packet(socket,buffer_server_totalusers,buffer_tell(buffer_server_totalusers))
 	
 	break;
@@ -124,24 +126,8 @@ switch (msgid)
 	
 	break;
 	case 2:
-	//Refresh
-		var _Rtotalusers, r
-		_Rtotalusers = 7
-		rcurrentstatuslist = ds_list_create()
-		ini_open("data.ini")
-		for (r=0;r<=_Rtotalusers;r++)
-		{
-			ds_list_insert(rcurrentstatuslist,r,ini_read_real("status",r,0))
-		}
-		ini_close()
-		compiledrcurrentstatuslist = ds_list_write(rcurrentstatuslist)
-		
-		var refresh_buffer = buffer_create(1024,buffer_fixed,1)
-		
-		buffer_seek(refresh_buffer,buffer_seek_start,0)
-		buffer_write(refresh_buffer,buffer_u8,2)
-		buffer_write(refresh_buffer,buffer_string,compiledrcurrentstatuslist)
-		network_send_packet(socket,refresh_buffer,buffer_tell(refresh_buffer))	
+	//Active Connection
+
 	break;
 	case 3:
 	//Textbox
@@ -247,5 +233,18 @@ switch (msgid)
 			network_send_packet(d_thissocket,buffer,buffer_tell(buffer))
 		}
 		
+	break;
+	case 7:
+	//Update Active Client Count
+		var active_client_buffer = buffer_create(1024,buffer_fixed,1)
+		buffer_seek(active_client_buffer,buffer_seek_start,0)
+		buffer_write(active_client_buffer,buffer_u8,7)
+		buffer_write(active_client_buffer,buffer_u32,ds_list_size(socketlist))
+		for (var f=0;f<ds_list_size(socketlist);f++)
+		{
+			var c_thissocket = ds_list_find_value(socketlist,f)
+			network_send_packet(c_thissocket,active_client_buffer,buffer_tell(active_client_buffer))
+		}
+	
 	break;
 }
