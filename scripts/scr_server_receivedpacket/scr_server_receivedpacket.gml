@@ -78,7 +78,7 @@ switch (msgid)
 		buffer_write(buffer_server_totalusers,buffer_string,compiledtextboxlist)
 		buffer_write(buffer_server_totalusers,buffer_string,compiledtimelist)
 		buffer_write(buffer_server_totalusers,buffer_string,compiledcheckmarklist)
-		buffer_write(buffer_server_totalusers,buffer_u32,ds_list_size(socketlist)+1)
+		buffer_write(buffer_server_totalusers,buffer_u32,ds_list_size(socketlist))
 		show_debug_message("Socketlist: " + string(ds_list_size(socketlist)))
 		network_send_packet(socket,buffer_server_totalusers,buffer_tell(buffer_server_totalusers))
 	
@@ -236,10 +236,18 @@ switch (msgid)
 	break;
 	case 7:
 	//Update Active Client Count
+		var add_or_subtract = buffer_read(read_buffer,buffer_string)
+		var number 
+		if add_or_subtract = "add"{
+			number = 0
+		}
+		else number = -1
+		
 		var active_client_buffer = buffer_create(1024,buffer_fixed,1)
 		buffer_seek(active_client_buffer,buffer_seek_start,0)
 		buffer_write(active_client_buffer,buffer_u8,7)
-		buffer_write(active_client_buffer,buffer_u32,ds_list_size(socketlist))
+		buffer_write(active_client_buffer,buffer_u32,ds_list_size(socketlist)+number)
+		show_debug_message("updated socketlist: " + string(ds_list_size(socketlist)+number))
 		for (var f=0;f<ds_list_size(socketlist);f++)
 		{
 			var c_thissocket = ds_list_find_value(socketlist,f)
