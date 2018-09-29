@@ -5,86 +5,112 @@ var msgid = buffer_read(read_buffer, buffer_u8)
 switch (msgid)
 {
 	case 0:
-	//Starting Connection
-		var _totalusers = buffer_read(read_buffer, buffer_u32)
+	#region Starting Connection
+		var _totalusers = buffer_read(read_buffer,buffer_u32)
 		var _xtotalusers = 8
 	
 		//Gather List of Names
-		userlist = ds_list_create()
+		var _userlist = ds_list_create()
+		var _currentstatuslist = ds_list_create()
+		var _currenttextboxlist = ds_list_create()
+		var _currenttimelist = ds_list_create()
+		var _checkmarklist = ds_list_create()
+		var _windowsnamelist = ds_list_create()
+		var _adminrightslist = ds_list_create()
+		
 		ini_open("data.ini")
-		var xnames
-		for (xnames=0;xnames<totalusers;xnames++)
+		var o
+		for (o=0;o<totalusers;o++)
 		{
-			ds_list_insert(userlist,xnames,ini_read_string("names",xnames,0))
+			ds_list_insert(_userlist,o,ini_read_string("names",o,0))
+			ds_list_insert(_currentstatuslist,o,ini_read_real("status",o,0))
+			ds_list_insert(_currenttextboxlist,o,ini_read_string("textbox",o,0))
+			ds_list_insert(_currenttimelist,o,ini_read_string("time",o,"0/0/0 0:00"))
+			ds_list_insert(_checkmarklist,o,ini_read_real("checkmark",o,0))
+			ds_list_insert(_windowsnamelist,o,ini_read_string("windowsnames",o,0))
+			ds_list_insert(_adminrightslist,o,ini_read_real("adminrights",o,0))
 		}
-		compileduserlist = ds_list_write(userlist)
+		var _compileduserlist = ds_list_write(_userlist)
+		var _compiledcurrentstatuslist = ds_list_write(_currentstatuslist)
+		var _compiledtextboxlist = ds_list_write(_currenttextboxlist)
+		var _compiledtimelist = ds_list_write(_currenttimelist)
+		var _compiledcheckmarklist = ds_list_write(_checkmarklist)
+		var _compiledwindowsnamelist = ds_list_write(_windowsnamelist)
+		var _compiledadminrightslist = ds_list_write(_adminrightslist)
 	
 		//Gather Total Statuses
-		statuslist = ds_list_create()
+		var _statuslist = ds_list_create()
 		var xstatus
 		for (xstatus=0;xstatus<=5;xstatus++)
 		{
-			ds_list_insert(statuslist,xstatus,ini_read_string("statuses",xstatus,0))	
+			ds_list_insert(_statuslist,xstatus,ini_read_string("statuses",xstatus,0))	
 		}
-		compiledstatuslist = ds_list_write(statuslist)
+		var _compiledstatuslist = ds_list_write(_statuslist)
 	
-		//Gather Current Statuses
-		currentstatuslist = ds_list_create()
-		var xcurrentstatus
-		for (xcurrentstatus=0;xcurrentstatus<totalusers;xcurrentstatus++)
-		{
-			ds_list_insert(currentstatuslist,xcurrentstatus,ini_read_real("status",xcurrentstatus,0))
-		}	
-		compiledcurrentstatuslist = ds_list_write(currentstatuslist)
+		////Gather Current Statuses
+		//currentstatuslist = ds_list_create()
+		//var xcurrentstatus
+		//for (xcurrentstatus=0;xcurrentstatus<totalusers;xcurrentstatus++)
+		//{
+		//	ds_list_insert(currentstatuslist,xcurrentstatus,ini_read_real("status",xcurrentstatus,0))
+		//}	
+		//compiledcurrentstatuslist = ds_list_write(currentstatuslist)
 		
-		//Gather Textboxes
-		currenttextboxlist = ds_list_create()
-		var xcurrenttextbox
-		for (xcurrenttextbox = 0;xcurrenttextbox<totalusers;xcurrenttextbox++)
-		{
-			ds_list_insert(currenttextboxlist,xcurrenttextbox,ini_read_string("textbox",xcurrenttextbox,0))	
-		}
-		compiledtextboxlist = ds_list_write(currenttextboxlist)
+		////Gather Textboxes
+		//currenttextboxlist = ds_list_create()
+		//var xcurrenttextbox
+		//for (xcurrenttextbox = 0;xcurrenttextbox<totalusers;xcurrenttextbox++)
+		//{
+		//	ds_list_insert(currenttextboxlist,xcurrenttextbox,ini_read_string("textbox",xcurrenttextbox,0))	
+		//}
+		//compiledtextboxlist = ds_list_write(currenttextboxlist)
 		
-		//Time
-		currenttimelist = ds_list_create()
-		var xcurrenttime
-		for (xcurrenttime=0;xcurrenttime<totalusers;xcurrenttime++)
-		{
-			ds_list_insert(currenttimelist,xcurrenttime,ini_read_string("time",xcurrenttime,"0/0/0 0:00"))	
-			//show_message(ds_list_find_value(currenttimelist,xcurrenttime))
-		}
-		compiledtimelist = ds_list_write(currenttimelist)
+		////Time
+		//currenttimelist = ds_list_create()
+		//var xcurrenttime
+		//for (xcurrenttime=0;xcurrenttime<totalusers;xcurrenttime++)
+		//{
+		//	ds_list_insert(currenttimelist,xcurrenttime,ini_read_string("time",xcurrenttime,"0/0/0 0:00"))	
+		//}
+		//compiledtimelist = ds_list_write(currenttimelist)
 		
-		//Checkmarks
-		checkmarklist = ds_list_create()
-		var xcurrentcheckmark
-		for(xcurrentcheckmark=0;xcurrentcheckmark<totalusers;xcurrentcheckmark++)
-		{
-			ds_list_insert(checkmarklist,xcurrentcheckmark,ini_read_real("checkmark",xcurrentcheckmark,0))
-		}
-		compiledcheckmarklist = ds_list_write(checkmarklist)
+		////Checkmarks
+		//checkmarklist = ds_list_create()
+		//var xcurrentcheckmark
+		//for(xcurrentcheckmark=0;xcurrentcheckmark<totalusers;xcurrentcheckmark++)
+		//{
+		//	ds_list_insert(checkmarklist,xcurrentcheckmark,ini_read_real("checkmark",xcurrentcheckmark,0))
+		//}
+		//compiledcheckmarklist = ds_list_write(checkmarklist)
+		
+		////Windows Names
+		//var _windowsnameslist = ds_list_create()
+		
+		////Admin Rights
 		
 		ini_close()
 	
 		//Sending Total Users
-		var buffer_server_totalusers = buffer_create(2048,buffer_fixed,1)
+		var buffer_server_totalusers = buffer_create(2048,buffer_grow,1)
 		buffer_seek(buffer_server_totalusers,buffer_seek_start,0)
 		buffer_write(buffer_server_totalusers,buffer_u8,0)
 		buffer_write(buffer_server_totalusers,buffer_u32,_xtotalusers)
-		buffer_write(buffer_server_totalusers,buffer_string,compileduserlist)
-		buffer_write(buffer_server_totalusers,buffer_string,compiledstatuslist)
-		buffer_write(buffer_server_totalusers,buffer_string,compiledcurrentstatuslist)
-		buffer_write(buffer_server_totalusers,buffer_string,compiledtextboxlist)
-		buffer_write(buffer_server_totalusers,buffer_string,compiledtimelist)
-		buffer_write(buffer_server_totalusers,buffer_string,compiledcheckmarklist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compileduserlist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledstatuslist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledcurrentstatuslist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledtextboxlist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledtimelist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledcheckmarklist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledwindowsnamelist)
+		buffer_write(buffer_server_totalusers,buffer_string,_compiledadminrightslist)
 		buffer_write(buffer_server_totalusers,buffer_u32,ds_list_size(socketlist))
 		show_debug_message("Socketlist: " + string(ds_list_size(socketlist)))
 		network_send_packet(socket,buffer_server_totalusers,buffer_tell(buffer_server_totalusers))
 	
 	break;
+	#endregion
 	case 1:
-	//Change Status
+	#region Change Status
 		var xstatusid, xstatus, d
 		xstatusid = buffer_read(read_buffer,buffer_u32)
 		xstatus = buffer_read(read_buffer,buffer_u32)
@@ -125,12 +151,14 @@ switch (msgid)
 		}
 	
 	break;
+	#endregion
 	case 2:
-	//Active Connection
+	#region Active Connection
 
 	break;
+	#endregion
 	case 3:
-	//Textbox
+	#region Textbox
 		var _textboxid, _text, t
 		
 		_textboxid = buffer_read(read_buffer,buffer_u32)
@@ -152,11 +180,12 @@ switch (msgid)
 		}
 		
 	break;
+	#endregion
 	case 4:
 	
 	break;
 	case 5:
-	//Dice Roll
+	#region Dice Roll
 	if dicerollcooldown <= 0
 	{
 		var compiledlist = buffer_read(read_buffer,buffer_string)
@@ -214,8 +243,9 @@ switch (msgid)
 	}
 	
 	break;
+	#endregion
 	case 6:
-	//Checkbox
+	#region Checkbox
 		var selected = buffer_read(read_buffer,buffer_u32)
 		var checkID = buffer_read(read_buffer,buffer_u32)
 		
@@ -234,8 +264,9 @@ switch (msgid)
 		}
 		
 	break;
+	#endregion
 	case 7:
-	//Update Active Client Count
+	#region Update Active Client Count
 		var add_or_subtract = buffer_read(read_buffer,buffer_string)
 		var number 
 		if add_or_subtract = "add"{
@@ -255,4 +286,88 @@ switch (msgid)
 		}
 	
 	break;
+	#endregion
+	case 8:
+	#region ManagerUsers Update
+		var _compiled_list_firstname_ID, _compiled_list_firstname_value, _compiled_list_windowsname_ID,
+		_compiled_list_windowsname_value, _compiled_list_admin_ID, _compiled_list_admin_value,
+		_list_firstname_ID, _list_firstname_value, _list_windowsname_ID, _list_windowsname_value,
+		_list_admin_ID, _list_admin_value, u, _ID, _value
+		
+		_compiled_list_firstname_ID = buffer_read(read_buffer,buffer_string)
+		_compiled_list_firstname_value = buffer_read(read_buffer,buffer_string)
+		_compiled_list_windowsname_ID = buffer_read(read_buffer,buffer_string)
+		_compiled_list_windowsname_value = buffer_read(read_buffer,buffer_string)
+		_compiled_list_admin_ID = buffer_read(read_buffer,buffer_string)
+		_compiled_list_admin_value = buffer_read(read_buffer,buffer_string)	
+		
+		_list_firstname_ID = ds_list_create()
+		_list_firstname_value = ds_list_create()
+		_list_windowsname_ID = ds_list_create()
+		_list_windowsname_value = ds_list_create()
+		_list_admin_ID = ds_list_create()
+		_list_admin_value = ds_list_create()
+		
+		ds_list_read(_list_firstname_ID,_compiled_list_firstname_ID)
+		ds_list_read(_list_firstname_value,_compiled_list_firstname_value)
+		ds_list_read(_list_windowsname_ID,_compiled_list_windowsname_ID)
+		ds_list_read(_list_windowsname_value,_compiled_list_windowsname_value)
+		ds_list_read(_list_admin_ID,_compiled_list_admin_ID)
+		ds_list_read(_list_admin_value,_compiled_list_admin_value)
+		
+		for(var poop=0;poop<ds_list_size(_list_admin_value);poop++)
+		{
+			show_debug_message("Admin Value: " + string(ds_list_find_value(_list_admin_value,poop)))	
+		}		
+		ini_open("data.ini")
+		if !ds_list_empty(_list_firstname_ID){
+			for (u=0;u<ds_list_size(_list_firstname_ID);u++)
+			{
+				_ID = ds_list_find_value(_list_firstname_ID,u)
+				_value = ds_list_find_value(_list_firstname_value,u)
+				
+				ini_write_string("names",_ID,_value)
+			}
+		}
+		if !ds_list_empty(_list_windowsname_ID){
+			for (u=0;u<ds_list_size(_list_windowsname_ID);u++)
+			{
+				_ID = ds_list_find_value(_list_windowsname_ID,u)
+				_value = ds_list_find_value(_list_windowsname_value,u)
+				
+				ini_write_string("windowsnames",_ID,_value)
+			}
+		}
+		if !ds_list_empty(_list_admin_ID){
+			for (u=0;u<ds_list_size(_list_admin_ID);u++)
+			{
+				_ID = ds_list_find_value(_list_admin_ID,u)
+				_value = ds_list_find_value(_list_admin_value,u)
+				
+				ini_write_real("adminrights",_ID,_value)
+			}
+		}
+		
+		ini_close()
+		
+		var buffer_server_manageusers = buffer_create(2048,buffer_grow,1)
+		
+		buffer_seek(buffer_server_manageusers,buffer_seek_start,0)
+		buffer_write(buffer_server_manageusers,buffer_u8,8)
+		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_firstname_ID)
+		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_firstname_value)
+		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_windowsname_ID)
+		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_windowsname_value)
+		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_admin_ID)
+		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_admin_value)
+		for (var u=0;u<ds_list_size(socketlist);u++)
+		{
+			var u_thissocket = ds_list_find_value(socketlist,u)
+			network_send_packet(u_thissocket,buffer_server_manageusers,buffer_tell(buffer_server_manageusers))
+		}
+		
+		
+		
+	break;
+	#endregion
 }
