@@ -288,7 +288,7 @@ switch (msgid)
 	break;
 	#endregion
 	case 8:
-	#region ManagerUsers Update
+	#region ManageUsers Update
 		var _compiled_list_firstname_ID, _compiled_list_firstname_value, _compiled_list_windowsname_ID,
 		_compiled_list_windowsname_value, _compiled_list_admin_ID, _compiled_list_admin_value,
 		_list_firstname_ID, _list_firstname_value, _list_windowsname_ID, _list_windowsname_value,
@@ -367,6 +367,50 @@ switch (msgid)
 		}
 		
 		
+		
+	break;
+	#endregion
+	case 9:
+	#region ManageUsers Add/Remove User
+		
+		var _ID, _name, _windowsname, _admin, _name_list, i, _totalusers_new, _position
+		
+		_ID = buffer_read(read_buffer,buffer_u32)
+		_name = buffer_read(read_buffer,buffer_string)
+		_windowsname = buffer_read(read_buffer,buffer_string)
+		_admin = buffer_read(read_buffer,buffer_u32)
+		
+		_name_list = ds_list_create()
+		
+		ini_open("data.ini")
+		
+		if _ID < totalusers						//Removing a User
+		{
+			
+		}
+		if _ID = totalusers						//Adding a User
+		{
+			for (i=0;i<totalusers;i++)
+			{
+				ds_list_add(_name_list,ini_read_string("names",i,0))
+			}	
+		
+			ds_list_add(_name_list,_name)
+			ds_list_sort(_name_list,false)
+			_totalusers_new = totalusers++
+		
+			for (i=0;i<_totalusers_new;i++)
+			{
+				var loopname = ds_list_find_value(_name_list,i)
+				if loopname = _name	{	_position = i	}
+				i = _totalusers_new
+			}
+		
+			
+			
+		}
+		
+		ini_close()
 		
 	break;
 	#endregion

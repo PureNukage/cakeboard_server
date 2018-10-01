@@ -146,7 +146,7 @@
             "Key": "68260f56-1a19-41df-b441-67aa1307b140",
             "Value": {
                 "id": "f2995609-9eec-4539-9a83-d3410b3744a6",
-                "resourcePath": "scripts\\scr_server_totalusers\\scr_server_totalusers.yy",
+                "resourcePath": "scripts\\scr_server_startup\\scr_server_startup.yy",
                 "resourceType": "GMScript"
             }
         },
