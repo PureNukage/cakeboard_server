@@ -390,11 +390,8 @@ switch (msgid)
 		}
 		if _ID = totalusers						//Adding a User
 		{
-			for (i=0;i<totalusers;i++)
-			{
-				ds_list_add(_name_list,ini_read_string("names",i,0))
-			}	
-		
+			
+			ds_list_copy(_name_list,database_names)
 			ds_list_add(_name_list,_name)
 			ds_list_sort(_name_list,false)
 			_totalusers_new = totalusers++
@@ -402,10 +399,32 @@ switch (msgid)
 			for (i=0;i<_totalusers_new;i++)
 			{
 				var loopname = ds_list_find_value(_name_list,i)
-				if loopname = _name	{	_position = i	}
-				i = _totalusers_new
+				if loopname = _name{	
+					_position = i	
+					i = _totalusers_new
+				}
 			}
-		
+			
+			
+				
+			
+			ds_list_insert(database_names,_position,_name)
+			ds_list_insert(database_windowsnames,_position,_windowsname)
+			ds_list_insert(database_adminrights,_position,_admin)
+			
+			ds_list_insert(database_status,_position,0)
+			ds_list_insert(database_textbox,_position,"")
+			ds_list_insert(database_time,_position,"0/0/0 0:00")
+			ds_list_insert(database_checkmark,_position,0)
+			
+			for(var c=0;c<totalusers;c++)
+			{
+				for(var i=0;i<totalusers;i++)
+				{
+					
+				}
+			}
+			
 			
 			
 		}

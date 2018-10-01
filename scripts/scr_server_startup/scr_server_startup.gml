@@ -30,29 +30,42 @@ var c = 0
 show_debug_message("totalusers: " + string(totalusers))
 for(var c=0;c<loops;c++)
 {
-for(var b=0;b<totalusers;b++)
-{
-	var list = array[c]
-	var key = string_copy(list,10,string_length(list))
-	var database = "database_"+string(key)
-	var value_string = ini_read_string(key,b,0)
-	var value_real = ini_read_real(key,b,0)
-	show_debug_message("key: " + string(key))
-	show_debug_message("database: " + string(database))
-	show_debug_message("value: " + string(value_string))
-	if key = "names" or "windowsnames" or "textbox" or "time"	//String
+	for(var b=0;b<totalusers;b++)
 	{
-		ds_list_add(real(database),value_string)
-		show_debug_message(string(ds_list_find_value(real(database),b)))
+		var list = array[c]
+		var key = string_copy(list,10,string_length(list))
+		var database = "database_"+string(key)
+		var value_string = ini_read_string(key,b,0)
+		var value_real = ini_read_real(key,b,0)
+		show_debug_message("c: " + string(c))
+		show_debug_message("key: " + string(key))
+		show_debug_message("database: " + string(database))
+		switch(key)
+		{
+			case "names":
+				ds_list_insert(database_names,b,value_string)
+			break;
+			case "windowsnames":
+				ds_list_insert(database_windowsnames,b,value_string)
+			break;
+			case "textbox":
+				ds_list_insert(database_textbox,b,value_string)
+			break;
+			case "time": 
+				ds_list_insert(database_time,b,value_string)
+			break;
+			case "status":
+				ds_list_insert(database_status,b,value_real)
+			break;
+			case "checkmark":
+				ds_list_insert(database_checkmark,b,value_real)
+			break;
+			case "adminrights":
+				ds_list_insert(database_adminrights,b,value_real)
+			break;
+		}
+		show_debug_message("")	
 	}
-	if key = "status" or "checkmark" or "adminrights" 		//Real
-	{
-		ds_list_add(real(database),value_real)
-		show_debug_message(string(ds_list_find_value(real(database),b)))
-	}
-	show_debug_message("")
-	
-}
 }
 
 
