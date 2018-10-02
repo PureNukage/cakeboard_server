@@ -33,14 +33,14 @@ for(var c=0;c<loops;c++)
 	for(var b=0;b<totalusers;b++)
 	{
 		var list = array[c]
-		var key = string_copy(list,10,string_length(list))
-		var database = "database_"+string(key)
-		var value_string = ini_read_string(key,b,0)
-		var value_real = ini_read_real(key,b,0)
-		show_debug_message("c: " + string(c))
-		show_debug_message("key: " + string(key))
-		show_debug_message("database: " + string(database))
-		switch(key)
+		var section = string_copy(list,10,string_length(list))
+		var database = "database_"+string(section)
+		var value_string = ini_read_string(section,b,0)
+		var value_real = ini_read_real(section,b,0)
+		//show_debug_message("c: " + string(c))
+		//show_debug_message("key: " + string(section))
+		//show_debug_message("database: " + string(database))
+		switch(section)
 		{
 			case "names":
 				ds_list_insert(database_names,b,value_string)
@@ -64,9 +64,10 @@ for(var c=0;c<loops;c++)
 				ds_list_insert(database_adminrights,b,value_real)
 			break;
 		}
-		show_debug_message("")	
+		//show_debug_message("")	
 	}
 }
 
+show_debug_message("")	
 
 ini_close()

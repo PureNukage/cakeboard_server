@@ -7,13 +7,12 @@ if !ini_open("data.ini"){	ini_open("data.ini")	}		//Open data.ini if not already
 array[0] = "database_names"
 array[1] = "database_windowsnames"
 array[2] = "database_status"
-array[3] = "database_statuses"
-array[4] = "database_textbox"
-array[5] = "database_time"
-array[6] = "database_checkmark"
-array[7] = "database_adminrights"
+array[3] = "database_textbox"
+array[4] = "database_time"
+array[5] = "database_checkmark"
+array[6] = "database_adminrights"
 
-var loops = 8	//Set this equal to the ds_lists above
+var loops = 7		//Set this equal to the ds_lists above
 var c = 0
 
 show_debug_message("totalusers: " + string(totalusers))

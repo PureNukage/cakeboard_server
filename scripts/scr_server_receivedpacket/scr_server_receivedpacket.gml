@@ -46,47 +46,8 @@ switch (msgid)
 			ds_list_insert(_statuslist,xstatus,ini_read_string("statuses",xstatus,0))	
 		}
 		var _compiledstatuslist = ds_list_write(_statuslist)
-	
-		////Gather Current Statuses
-		//currentstatuslist = ds_list_create()
-		//var xcurrentstatus
-		//for (xcurrentstatus=0;xcurrentstatus<totalusers;xcurrentstatus++)
-		//{
-		//	ds_list_insert(currentstatuslist,xcurrentstatus,ini_read_real("status",xcurrentstatus,0))
-		//}	
-		//compiledcurrentstatuslist = ds_list_write(currentstatuslist)
 		
-		////Gather Textboxes
-		//currenttextboxlist = ds_list_create()
-		//var xcurrenttextbox
-		//for (xcurrenttextbox = 0;xcurrenttextbox<totalusers;xcurrenttextbox++)
-		//{
-		//	ds_list_insert(currenttextboxlist,xcurrenttextbox,ini_read_string("textbox",xcurrenttextbox,0))	
-		//}
-		//compiledtextboxlist = ds_list_write(currenttextboxlist)
-		
-		////Time
-		//currenttimelist = ds_list_create()
-		//var xcurrenttime
-		//for (xcurrenttime=0;xcurrenttime<totalusers;xcurrenttime++)
-		//{
-		//	ds_list_insert(currenttimelist,xcurrenttime,ini_read_string("time",xcurrenttime,"0/0/0 0:00"))	
-		//}
-		//compiledtimelist = ds_list_write(currenttimelist)
-		
-		////Checkmarks
-		//checkmarklist = ds_list_create()
-		//var xcurrentcheckmark
-		//for(xcurrentcheckmark=0;xcurrentcheckmark<totalusers;xcurrentcheckmark++)
-		//{
-		//	ds_list_insert(checkmarklist,xcurrentcheckmark,ini_read_real("checkmark",xcurrentcheckmark,0))
-		//}
-		//compiledcheckmarklist = ds_list_write(checkmarklist)
-		
-		////Windows Names
-		//var _windowsnameslist = ds_list_create()
-		
-		////Admin Rights
+		//Admin Rights
 		
 		ini_close()
 	
@@ -94,7 +55,7 @@ switch (msgid)
 		var buffer_server_totalusers = buffer_create(2048,buffer_grow,1)
 		buffer_seek(buffer_server_totalusers,buffer_seek_start,0)
 		buffer_write(buffer_server_totalusers,buffer_u8,0)
-		buffer_write(buffer_server_totalusers,buffer_u32,_xtotalusers)
+		buffer_write(buffer_server_totalusers,buffer_u32,totalusers)
 		buffer_write(buffer_server_totalusers,buffer_string,_compileduserlist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledstatuslist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledcurrentstatuslist)
@@ -313,12 +274,8 @@ switch (msgid)
 		ds_list_read(_list_windowsname_ID,_compiled_list_windowsname_ID)
 		ds_list_read(_list_windowsname_value,_compiled_list_windowsname_value)
 		ds_list_read(_list_admin_ID,_compiled_list_admin_ID)
-		ds_list_read(_list_admin_value,_compiled_list_admin_value)
+		ds_list_read(_list_admin_value,_compiled_list_admin_value)		
 		
-		for(var poop=0;poop<ds_list_size(_list_admin_value);poop++)
-		{
-			show_debug_message("Admin Value: " + string(ds_list_find_value(_list_admin_value,poop)))	
-		}		
 		ini_open("data.ini")
 		if !ds_list_empty(_list_firstname_ID){
 			for (u=0;u<ds_list_size(_list_firstname_ID);u++)
@@ -386,6 +343,92 @@ switch (msgid)
 		
 		if _ID < totalusers						//Removing a User
 		{
+			ds_list_copy(_name_list,database_names)
+			for (i=0;i<totalusers;i++)
+			{
+				var loopname = ds_list_find_value(_name_list,i)
+				if loopname = _name{	
+					var _position = i	
+					i = totalusers
+				}
+			}
+			
+			var _totalusers_new = totalusers - 1
+			
+			ds_list_delete(database_names,_position)
+			ds_list_delete(database_windowsnames,_position)
+			ds_list_delete(database_status,_position)
+			ds_list_delete(database_textbox,_position)
+			ds_list_delete(database_time,_position)
+			ds_list_delete(database_checkmark,_position)
+			ds_list_delete(database_adminrights,_position)
+			
+			var array 
+			array[7] = 0
+			array[0] = "database_names"
+			array[1] = "database_windowsnames"
+			array[2] = "database_status"
+			array[3] = "database_textbox"
+			array[4] = "database_time"
+			array[5] = "database_checkmark"
+			array[6] = "database_adminrights"
+			
+			var loops = 7	//This value should be equal to the number of databases above
+			
+			for(var c=0;c<loops;c++)
+			{
+				for(var i=0;i<totalusers;i++)
+				{
+					var list = array[c]
+					var section = string_copy(list,10,string_length(list))
+					switch(section)
+					{
+						case "names":
+							if i<_totalusers_new{
+								ini_write_string(section,i,ds_list_find_value(database_names,i))
+							}
+							else ini_key_delete(section,i)
+						break;
+						case "windowsnames":
+							if i<_totalusers_new{
+							ini_write_string(section,i,ds_list_find_value(database_windowsnames,i))		
+							}
+							else ini_key_delete(section,i)
+						break;
+						case "textbox":
+							if i<_totalusers_new{
+							ini_write_string(section,i,ds_list_find_value(database_textbox,i))
+							}
+							else ini_key_delete(section,i)
+						break;
+						case "time": 
+							if i<_totalusers_new{
+							ini_write_string(section,i,ds_list_find_value(database_time,i))
+							}
+							else ini_key_delete(section,i)
+						break;
+						case "status":
+							if i<_totalusers_new{
+							ini_write_real(section,i,ds_list_find_value(database_status,i))
+							}
+							else ini_key_delete(section,i)
+						break;
+						case "checkmark":
+							if i<_totalusers_new{
+							ini_write_real(section,i,ds_list_find_value(database_checkmark,i))
+							}
+							else ini_key_delete(section,i)
+						break;
+						case "adminrights":
+							if i<_totalusers_new{
+							ini_write_real(section,i,ds_list_find_value(database_adminrights,i))
+							}
+							else ini_key_delete(section,i)
+						break;
+					}
+				}
+			}	
+			
 			
 		}
 		if _ID = totalusers						//Adding a User
@@ -393,8 +436,8 @@ switch (msgid)
 			
 			ds_list_copy(_name_list,database_names)
 			ds_list_add(_name_list,_name)
-			ds_list_sort(_name_list,false)
-			_totalusers_new = totalusers++
+			ds_list_sort(_name_list,true)
+			var _totalusers_new = totalusers + 1
 		
 			for (i=0;i<_totalusers_new;i++)
 			{
@@ -405,8 +448,15 @@ switch (msgid)
 				}
 			}
 			
-			
-				
+			var array 
+			array[7] = 0
+			array[0] = "database_names"
+			array[1] = "database_windowsnames"
+			array[2] = "database_status"
+			array[3] = "database_textbox"
+			array[4] = "database_time"
+			array[5] = "database_checkmark"
+			array[6] = "database_adminrights"
 			
 			ds_list_insert(database_names,_position,_name)
 			ds_list_insert(database_windowsnames,_position,_windowsname)
@@ -417,19 +467,71 @@ switch (msgid)
 			ds_list_insert(database_time,_position,"0/0/0 0:00")
 			ds_list_insert(database_checkmark,_position,0)
 			
-			for(var c=0;c<totalusers;c++)
+			var loops = 7	//This value should be equal to the number of databases above
+			
+			for(var c=0;c<loops;c++)
 			{
-				for(var i=0;i<totalusers;i++)
+				for(var i=0;i<_totalusers_new;i++)
 				{
-					
+					var list = array[c]
+					var section = string_copy(list,10,string_length(list))
+					switch(section)
+					{
+						case "names":
+							ini_write_string(section,i,ds_list_find_value(database_names,i))
+						break;
+						case "windowsnames":
+							ini_write_string(section,i,ds_list_find_value(database_windowsnames,i))						
+						break;
+						case "textbox":
+							ini_write_string(section,i,ds_list_find_value(database_textbox,i))
+						break;
+						case "time": 
+							ini_write_string(section,i,ds_list_find_value(database_time,i))
+						break;
+						case "status":
+							ini_write_real(section,i,ds_list_find_value(database_status,i))
+						break;
+						case "checkmark":
+							ini_write_real(section,i,ds_list_find_value(database_checkmark,i))
+						break;
+						case "adminrights":
+							ini_write_real(section,i,ds_list_find_value(database_adminrights,i))
+						break;
+					}
 				}
-			}
-			
-			
-			
+			}	
 		}
 		
 		ini_close()
+		
+		totalusers = _totalusers_new
+		
+		var _compiled_names = ds_list_write(database_names)
+		var _compiled_windowsnames = ds_list_write(database_windowsnames)
+		var _compiled_adminrights = ds_list_write(database_adminrights)
+		
+		var _compiled_status = ds_list_write(database_status)
+		var _compiled_textbox = ds_list_write(database_textbox)
+		var _compiled_time = ds_list_write(database_time)
+		var _compiled_checkmark = ds_list_write(database_checkmark)
+
+		var buffer_updated_users = buffer_create(2048,buffer_grow,1)
+		buffer_seek(buffer_updated_users,buffer_seek_start,0)
+		buffer_write(buffer_updated_users,buffer_u8,9)
+		buffer_write(buffer_updated_users,buffer_u32,_totalusers_new)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_names)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_windowsnames)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_adminrights)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_status)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_textbox)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_time)
+		buffer_write(buffer_updated_users,buffer_string,_compiled_checkmark)
+		for (var l=0;l<ds_list_size(socketlist);l++)
+		{
+			var l_socket = ds_list_find_value(socketlist,l)
+			network_send_packet(l_socket,buffer_updated_users,buffer_tell(buffer_updated_users))
+		}
 		
 	break;
 	#endregion
