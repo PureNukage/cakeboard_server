@@ -6,8 +6,21 @@ switch (msgid)
 {
 	case 0:
 	#region Starting Connection
-		var _totalusers = buffer_read(read_buffer,buffer_u32)
-		var _xtotalusers = 8
+		var _windowsname = buffer_read(read_buffer,buffer_string)
+		var _ID
+		
+		ini_open("data.ini")
+		
+		//Signing in							//Loop through Windowsnames to compare returned Windowsname
+		for(var i=0;i<totalusers;i++)
+		{
+			var _current_windowsname = ini_read_string("windowsnames",i,0)
+			if _current_windowsname = _windowsname{
+				_ID = i
+				i = totalusers
+			}
+			else _ID = -1
+		}
 	
 		//Gather List of Names
 		var _userlist = ds_list_create()
@@ -18,7 +31,6 @@ switch (msgid)
 		var _windowsnamelist = ds_list_create()
 		var _adminrightslist = ds_list_create()
 		
-		ini_open("data.ini")
 		var o
 		for (o=0;o<totalusers;o++)
 		{
@@ -40,8 +52,8 @@ switch (msgid)
 	
 		//Gather Total Statuses
 		var _statuslist = ds_list_create()
-		var xstatus
-		for (xstatus=0;xstatus<=5;xstatus++)
+		
+		for (var xstatus=0;xstatus<=5;xstatus++)
 		{
 			ds_list_insert(_statuslist,xstatus,ini_read_string("statuses",xstatus,0))	
 		}
@@ -56,6 +68,7 @@ switch (msgid)
 		buffer_seek(buffer_server_totalusers,buffer_seek_start,0)
 		buffer_write(buffer_server_totalusers,buffer_u8,0)
 		buffer_write(buffer_server_totalusers,buffer_u32,totalusers)
+		buffer_write(buffer_server_totalusers,buffer_u32,_ID)
 		buffer_write(buffer_server_totalusers,buffer_string,_compileduserlist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledstatuslist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledcurrentstatuslist)
