@@ -263,81 +263,54 @@ switch (msgid)
 	#endregion
 	case 8:
 	#region ManageUsers Update
-		var _compiled_list_firstname_ID, _compiled_list_firstname_value, _compiled_list_windowsname_ID,
-		_compiled_list_windowsname_value, _compiled_list_admin_ID, _compiled_list_admin_value,
-		_list_firstname_ID, _list_firstname_value, _list_windowsname_ID, _list_windowsname_value,
-		_list_admin_ID, _list_admin_value, u, _ID, _value
+	
+		var _ID = buffer_read(read_buffer,buffer_u32)
+		var _section = buffer_read(read_buffer,buffer_string)
 		
-		_compiled_list_firstname_ID = buffer_read(read_buffer,buffer_string)
-		_compiled_list_firstname_value = buffer_read(read_buffer,buffer_string)
-		_compiled_list_windowsname_ID = buffer_read(read_buffer,buffer_string)
-		_compiled_list_windowsname_value = buffer_read(read_buffer,buffer_string)
-		_compiled_list_admin_ID = buffer_read(read_buffer,buffer_string)
-		_compiled_list_admin_value = buffer_read(read_buffer,buffer_string)	
-		
-		_list_firstname_ID = ds_list_create()
-		_list_firstname_value = ds_list_create()
-		_list_windowsname_ID = ds_list_create()
-		_list_windowsname_value = ds_list_create()
-		_list_admin_ID = ds_list_create()
-		_list_admin_value = ds_list_create()
-		
-		ds_list_read(_list_firstname_ID,_compiled_list_firstname_ID)
-		ds_list_read(_list_firstname_value,_compiled_list_firstname_value)
-		ds_list_read(_list_windowsname_ID,_compiled_list_windowsname_ID)
-		ds_list_read(_list_windowsname_value,_compiled_list_windowsname_value)
-		ds_list_read(_list_admin_ID,_compiled_list_admin_ID)
-		ds_list_read(_list_admin_value,_compiled_list_admin_value)		
+		show_debug_message("ID: " +string(_ID))
+		show_debug_message("who: " +string(ds_list_find_value(database_names,_ID)))
+		show_debug_message("section: " +string(_section))
 		
 		ini_open("data.ini")
-		if !ds_list_empty(_list_firstname_ID){
-			for (u=0;u<ds_list_size(_list_firstname_ID);u++)
-			{
-				_ID = ds_list_find_value(_list_firstname_ID,u)
-				_value = ds_list_find_value(_list_firstname_value,u)
-				
-				ini_write_string("names",_ID,_value)
-			}
-		}
-		if !ds_list_empty(_list_windowsname_ID){
-			for (u=0;u<ds_list_size(_list_windowsname_ID);u++)
-			{
-				_ID = ds_list_find_value(_list_windowsname_ID,u)
-				_value = ds_list_find_value(_list_windowsname_value,u)
-				
-				ini_write_string("windowsnames",_ID,_value)
-			}
-		}
-		if !ds_list_empty(_list_admin_ID){
-			for (u=0;u<ds_list_size(_list_admin_ID);u++)
-			{
-				_ID = ds_list_find_value(_list_admin_ID,u)
-				_value = ds_list_find_value(_list_admin_value,u)
-				
-				ini_write_real("adminrights",_ID,_value)
-			}
+		var buffer = buffer_create(1024,buffer_fixed,1)
+		buffer_seek(buffer,buffer_seek_start,0)
+		buffer_write(buffer,buffer_u8,8)
+		buffer_write(buffer,buffer_u32,_ID)
+		buffer_write(buffer,buffer_string,_section)
+		
+		switch(_section)	//Which user data is being changed
+		{
+			case "names":
+				var _text = buffer_read(read_buffer,buffer_string)
+				ds_list_replace(database_names,_ID,_text)			
+				ini_write_string(_section,_ID,_text)
+				buffer_write(buffer,buffer_string,_text)
+				show_debug_message("new name: " +string(_text))
+			break;
+			case "windowsnames":
+				var _text = buffer_read(read_buffer,buffer_string)
+				ds_list_replace(database_windowsnames,_ID,_text)	
+				ini_write_string(_section,_ID,_text)
+				buffer_write(buffer,buffer_string,_text)
+				show_debug_message("new windows name: " +string(_text))
+			break;
+			case "adminrights":
+				var _admin = buffer_read(read_buffer,buffer_u32)
+				ds_list_replace(database_adminrights,_ID,_admin)
+				ini_write_real(_section,_ID,_admin)
+				buffer_write(buffer,buffer_u32,_admin)
+				show_debug_message("new admin: " +string(_admin))
+			break;
 		}
 		
-		ini_close()
-		
-		var buffer_server_manageusers = buffer_create(2048,buffer_grow,1)
-		
-		buffer_seek(buffer_server_manageusers,buffer_seek_start,0)
-		buffer_write(buffer_server_manageusers,buffer_u8,8)
-		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_firstname_ID)
-		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_firstname_value)
-		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_windowsname_ID)
-		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_windowsname_value)
-		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_admin_ID)
-		buffer_write(buffer_server_manageusers,buffer_string,_compiled_list_admin_value)
 		for (var u=0;u<ds_list_size(socketlist);u++)
 		{
 			var u_thissocket = ds_list_find_value(socketlist,u)
-			network_send_packet(u_thissocket,buffer_server_manageusers,buffer_tell(buffer_server_manageusers))
+			network_send_packet(u_thissocket,buffer,buffer_tell(buffer))
 		}
-		
-		
-		
+		show_debug_message("")
+		ini_close()
+
 	break;
 	#endregion
 	case 9:
@@ -370,11 +343,11 @@ switch (msgid)
 			
 			ds_list_delete(database_names,_position)					//		Deleting all of the records of this account
 			ds_list_delete(database_windowsnames,_position)				//		in the temporary database
-			ds_list_delete(database_status,_position)					//
-			ds_list_delete(database_textbox,_position)					//
-			ds_list_delete(database_time,_position)						//
-			ds_list_delete(database_checkmark,_position)				//
-			ds_list_delete(database_adminrights,_position)				//
+			ds_list_delete(database_status,_position)					//		
+			ds_list_delete(database_textbox,_position)					//		
+			ds_list_delete(database_time,_position)						//		
+			ds_list_delete(database_checkmark,_position)				//		
+			ds_list_delete(database_adminrights,_position)				//		
 			
 			var array 
 			array[7] = 0												//		Making a temporary data structure to house
