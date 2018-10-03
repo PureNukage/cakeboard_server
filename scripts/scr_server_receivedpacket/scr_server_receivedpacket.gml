@@ -356,42 +356,42 @@ switch (msgid)
 		
 		if _ID < totalusers						//Removing a User
 		{
-			ds_list_copy(_name_list,database_names)
-			for (i=0;i<totalusers;i++)
-			{
-				var loopname = ds_list_find_value(_name_list,i)
-				if loopname = _name{	
-					var _position = i	
-					i = totalusers
+			ds_list_copy(_name_list,database_names)						//		Loops through the current list of usernames
+			for (i=0;i<totalusers;i++)									//		until it finds the name of the person who
+			{															//		was selected to be removed
+				var loopname = ds_list_find_value(_name_list,i)			//
+				if loopname = _name{									//
+					var _position = i									//
+					i = totalusers										//
 				}
 			}
 			
-			var _totalusers_new = totalusers - 1
+			var _totalusers_new = totalusers - 1						//		Setting the new number of totalusers for use later
 			
-			ds_list_delete(database_names,_position)
-			ds_list_delete(database_windowsnames,_position)
-			ds_list_delete(database_status,_position)
-			ds_list_delete(database_textbox,_position)
-			ds_list_delete(database_time,_position)
-			ds_list_delete(database_checkmark,_position)
-			ds_list_delete(database_adminrights,_position)
+			ds_list_delete(database_names,_position)					//		Deleting all of the records of this account
+			ds_list_delete(database_windowsnames,_position)				//		in the temporary database
+			ds_list_delete(database_status,_position)					//
+			ds_list_delete(database_textbox,_position)					//
+			ds_list_delete(database_time,_position)						//
+			ds_list_delete(database_checkmark,_position)				//
+			ds_list_delete(database_adminrights,_position)				//
 			
 			var array 
-			array[7] = 0
-			array[0] = "database_names"
-			array[1] = "database_windowsnames"
-			array[2] = "database_status"
-			array[3] = "database_textbox"
-			array[4] = "database_time"
-			array[5] = "database_checkmark"
-			array[6] = "database_adminrights"
+			array[7] = 0												//		Making a temporary data structure to house
+			array[0] = "database_names"									//		all of the names of the temporary database
+			array[1] = "database_windowsnames"							//		variable names
+			array[2] = "database_status"								//
+			array[3] = "database_textbox"								//
+			array[4] = "database_time"									//
+			array[5] = "database_checkmark"								//
+			array[6] = "database_adminrights"							//
 			
 			var loops = 7	//This value should be equal to the number of databases above
 			
-			for(var c=0;c<loops;c++)
+			for(var c=0;c<loops;c++)				//Loop through as many times as there are databases
 			{
-				for(var i=0;i<totalusers;i++)
-				{
+				for(var i=0;i<totalusers;i++)		//Loop through as many times as there are users in the system 
+				{									//This happens once for each database 
 					var list = array[c]
 					var section = string_copy(list,10,string_length(list))
 					switch(section)
