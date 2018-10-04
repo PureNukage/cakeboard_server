@@ -21,6 +21,7 @@ switch (msgid)
 			}
 			else _ID = -1
 		}
+		if totalusers = 0{	_ID = -1	}
 	
 		//Gather List of Names
 		var _userlist = ds_list_create()
