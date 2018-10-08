@@ -6,7 +6,10 @@ for (i=0;i<=24;i++)
 {
 	if current_hour <= 12
 	{
-		hour[current_hour] = current_hour
+		if current_hour = 0{
+			hour[current_hour] = 12
+		}
+		else hour[current_hour] = current_hour
 	}
 	else
 	{
