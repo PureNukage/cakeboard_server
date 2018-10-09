@@ -89,6 +89,8 @@ switch (msgid)
 		var xstatusid, xstatus, d
 		xstatusid = buffer_read(read_buffer,buffer_u32)
 		xstatus = buffer_read(read_buffer,buffer_u32)
+		
+		ds_list_replace(database_status,xstatusid,xstatus)
 	
 		if xstatus != 5
 		{
@@ -108,6 +110,8 @@ switch (msgid)
 			time = ini_read_string("time",xstatusid,"")
 			ini_close()
 		}
+		
+		ds_list_replace(database_time,xstatusid,time)
 		
 		ini_open("data.ini")
 		ini_write_real("status",xstatusid,xstatus)
@@ -138,6 +142,8 @@ switch (msgid)
 		
 		_textboxid = buffer_read(read_buffer,buffer_u32)
 		_text = buffer_read(read_buffer,buffer_string)
+		
+		ds_list_replace(database_textbox,_textboxid,_text)
 		
 		ini_open("data.ini")
 		ini_write_string("textbox",_textboxid,_text)
@@ -223,6 +229,8 @@ switch (msgid)
 	#region Checkbox
 		var selected = buffer_read(read_buffer,buffer_u32)
 		var checkID = buffer_read(read_buffer,buffer_u32)
+		
+		ds_list_replace(database_checkmark,checkID,selected)
 		
 		ini_open("data.ini")
 		ini_write_real("checkmark",checkID,selected)
@@ -324,6 +332,11 @@ switch (msgid)
 		_windowsname = buffer_read(read_buffer,buffer_string)
 		_admin = buffer_read(read_buffer,buffer_u32)
 		
+		show_debug_message("ID: "+string(_ID))
+		show_debug_message("Name: "+string(_name))
+		show_debug_message("Windowsname: "+string(_windowsname))
+		show_debug_message("Admin: "+string(_admin))
+		
 		_name_list = ds_list_create()
 		
 		ini_open("data.ini")
@@ -368,47 +381,56 @@ switch (msgid)
 				{									//This happens once for each database 
 					var list = array[c]
 					var section = string_copy(list,10,string_length(list))
+					show_debug_message("c: "+string(c))
+					show_debug_message("i: "+string(i))
 					switch(section)
 					{
 						case "names":
 							if i<_totalusers_new{
 								ini_write_string(section,i,ds_list_find_value(database_names,i))
+								show_debug_message("writing name: "+string(ds_list_find_value(database_names,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
 						case "windowsnames":
 							if i<_totalusers_new{
-							ini_write_string(section,i,ds_list_find_value(database_windowsnames,i))		
+								ini_write_string(section,i,ds_list_find_value(database_windowsnames,i))		
+								show_debug_message("writing windowsname: "+string(ds_list_find_value(database_windowsnames,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
 						case "textbox":
 							if i<_totalusers_new{
-							ini_write_string(section,i,ds_list_find_value(database_textbox,i))
+								ini_write_string(section,i,ds_list_find_value(database_textbox,i))
+								show_debug_message("writing textbox: " +string(ds_list_find_value(database_textbox,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
 						case "time": 
 							if i<_totalusers_new{
-							ini_write_string(section,i,ds_list_find_value(database_time,i))
+								ini_write_string(section,i,ds_list_find_value(database_time,i))
+								show_debug_message("writing time: "+string(ds_list_find_value(database_time,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
 						case "status":
 							if i<_totalusers_new{
-							ini_write_real(section,i,ds_list_find_value(database_status,i))
+								ini_write_real(section,i,ds_list_find_value(database_status,i))
+								show_debug_message("writing status: "+string(ds_list_find_value(database_status,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
 						case "checkmark":
 							if i<_totalusers_new{
-							ini_write_real(section,i,ds_list_find_value(database_checkmark,i))
+								ini_write_real(section,i,ds_list_find_value(database_checkmark,i))
+								show_debug_message("writing checkmark: "+string(ds_list_find_value(database_checkmark,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
 						case "adminrights":
 							if i<_totalusers_new{
-							ini_write_real(section,i,ds_list_find_value(database_adminrights,i))
+								ini_write_real(section,i,ds_list_find_value(database_adminrights,i))
+								show_debug_message("writing adminrights: "+string(ds_list_find_value(database_adminrights,i)))
 							}
 							else ini_key_delete(section,i)
 						break;
@@ -444,6 +466,8 @@ switch (msgid)
 			array[4] = "database_time"
 			array[5] = "database_checkmark"
 			array[6] = "database_adminrights"
+			
+			show_debug_message("position: " +string(_position))
 			
 			ds_list_insert(database_names,_position,_name)
 			ds_list_insert(database_windowsnames,_position,_windowsname)
