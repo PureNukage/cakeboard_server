@@ -31,6 +31,7 @@ switch (msgid)
 		var _checkmarklist = ds_list_create()
 		var _windowsnamelist = ds_list_create()
 		var _adminrightslist = ds_list_create()
+		var _theme = 0
 		
 		var o
 		for (o=0;o<totalusers;o++)
@@ -60,6 +61,12 @@ switch (msgid)
 		}
 		var _compiledstatuslist = ds_list_write(_statuslist)
 		
+		//Theme
+		if _ID != -1{
+			_theme = ds_list_find_value(database_themes,_ID)	
+		}
+		else _theme = 0
+		
 		//Admin Rights
 		
 		ini_close()
@@ -69,7 +76,7 @@ switch (msgid)
 		buffer_seek(buffer_server_totalusers,buffer_seek_start,0)
 		buffer_write(buffer_server_totalusers,buffer_u8,0)
 		buffer_write(buffer_server_totalusers,buffer_u32,totalusers)
-		buffer_write(buffer_server_totalusers,buffer_u32,_ID)
+		buffer_write(buffer_server_totalusers,buffer_s16,_ID)
 		buffer_write(buffer_server_totalusers,buffer_string,_compileduserlist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledstatuslist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledcurrentstatuslist)
@@ -78,6 +85,7 @@ switch (msgid)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledcheckmarklist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledwindowsnamelist)
 		buffer_write(buffer_server_totalusers,buffer_string,_compiledadminrightslist)
+		buffer_write(buffer_server_totalusers,buffer_u32,_theme)
 		buffer_write(buffer_server_totalusers,buffer_u32,ds_list_size(socketlist))
 		show_debug_message("Socketlist: " + string(ds_list_size(socketlist)))
 		network_send_packet(socket,buffer_server_totalusers,buffer_tell(buffer_server_totalusers))
@@ -361,10 +369,11 @@ switch (msgid)
 			ds_list_delete(database_textbox,_position)					//		
 			ds_list_delete(database_time,_position)						//		
 			ds_list_delete(database_checkmark,_position)				//		
-			ds_list_delete(database_adminrights,_position)				//		
+			ds_list_delete(database_adminrights,_position)				//	
+			ds_list_delete(database_themes,_position)
 			
 			var array 
-			array[7] = 0												//		Making a temporary data structure to house
+			array[8] = 0												//		Making a temporary data structure to house
 			array[0] = "database_names"									//		all of the names of the temporary database
 			array[1] = "database_windowsnames"							//		variable names
 			array[2] = "database_status"								//
@@ -372,8 +381,9 @@ switch (msgid)
 			array[4] = "database_time"									//
 			array[5] = "database_checkmark"								//
 			array[6] = "database_adminrights"							//
+			array[7] = "database_themes"
 			
-			var loops = 7	//This value should be equal to the number of databases above
+			var loops = 8	//This value should be equal to the number of databases above
 			
 			for(var c=0;c<loops;c++)				//Loop through as many times as there are databases
 			{
@@ -434,6 +444,12 @@ switch (msgid)
 							}
 							else ini_key_delete(section,i)
 						break;
+						case "themes":
+							if i<_totalusers_new{
+								ini_write_real(section,i,ds_list_find_value(database_themes,i))
+							}
+							else ini_key_delete(section,i)
+						break;
 					}
 				}
 			}	
@@ -466,6 +482,7 @@ switch (msgid)
 			array[4] = "database_time"
 			array[5] = "database_checkmark"
 			array[6] = "database_adminrights"
+			array[7] = "database_themes"
 			
 			show_debug_message("position: " +string(_position))
 			
@@ -477,8 +494,9 @@ switch (msgid)
 			ds_list_insert(database_textbox,_position,"")
 			ds_list_insert(database_time,_position,"0/0/0 0:00")
 			ds_list_insert(database_checkmark,_position,0)
+			ds_list_insert(database_themes,_position,0)
 			
-			var loops = 7	//This value should be equal to the number of databases above
+			var loops = 8	//This value should be equal to the number of databases above
 			
 			for(var c=0;c<loops;c++)
 			{
@@ -508,6 +526,9 @@ switch (msgid)
 						break;
 						case "adminrights":
 							ini_write_real(section,i,ds_list_find_value(database_adminrights,i))
+						break;
+						case "themes":
+							ini_write_real(section,i,ds_list_find_value(database_themes,i))
 						break;
 					}
 				}
@@ -546,4 +567,20 @@ switch (msgid)
 		
 	break;
 	#endregion
+	case 10:
+	#region Updating Theme
+	
+		var _theme = buffer_read(read_buffer,buffer_u32)
+		var _profile = buffer_read(read_buffer,buffer_s16)
+		
+		ds_list_replace(database_themes,_profile,_theme)
+		
+		ini_open("data.ini")
+		
+		ini_write_real("themes",_profile,_theme)
+		
+		ini_close()
+		
+	#endregion
+	break;
 }

@@ -10,7 +10,7 @@
     "option_windows_copyright_info": "2018 Stenson, Roosevelt",
     "option_windows_description_info": "",
     "option_windows_display_cursor": true,
-    "option_windows_display_name": "Cakeboard Server",
+    "option_windows_display_name": "DST_Cakeboard Server",
     "option_windows_enable_steam": false,
     "option_windows_executable_name": "${project_name}",
     "option_windows_icon": "${base_options_dir}\\windows\\icons\\icon.ico",

@@ -23,8 +23,9 @@ database_textbox = ds_list_create()				array[4] = "database_textbox"
 database_time = ds_list_create()				array[5] = "database_time"
 database_checkmark = ds_list_create()			array[6] = "database_checkmark"
 database_adminrights = ds_list_create()			array[7] = "database_adminrights"
+database_themes = ds_list_create()				array[8] = "database_themes"
 
-var loops = 8	//Set this equal to the ds_lists above
+var loops = 9	//Set this equal to the ds_lists above
 var c = 0
 
 show_debug_message("totalusers: " + string(totalusers))
@@ -63,6 +64,9 @@ for(var c=0;c<loops;c++)
 			case "adminrights":
 				ds_list_insert(database_adminrights,b,value_real)
 			break;
+			case "themes":
+				ds_list_insert(database_themes,b,value_real)
+			break;	
 		}
 		//show_debug_message("")	
 	}

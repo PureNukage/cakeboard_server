@@ -1,7 +1,7 @@
 var type,port,maxclients
 type = network_socket_tcp
-port = 64197 //64198
-maxclients = 8
+port = 64198 //64198
+maxclients = 64
 
 server = network_create_server(type,port,maxclients)
 
