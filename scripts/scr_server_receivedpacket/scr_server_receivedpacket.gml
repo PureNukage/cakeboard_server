@@ -109,8 +109,10 @@ switch (msgid)
 			{
 				time = ini_read_string("time",xstatusid,"")
 			}
-			else scr_time(xstatusid)
-			ini_close()
+			else{ 
+				scr_time(xstatusid)
+				ini_close()
+			}
 		}
 		else	//Chipotle status, don't change time
 		{

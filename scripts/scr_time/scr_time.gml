@@ -30,8 +30,8 @@ for (b=0;b<=59;b++)
 		minute[current_minute] = "0"+string(current_minute)	
 	}
 }
-var _time = string(current_month) + "/" + string(current_day) + "/" + string(current_year-2000) + " " + string(hour[current_hour]) + ":" + string(minute[current_minute])
+time = string(current_month) + "/" + string(current_day) + "/" + string(current_year-2000) + " " + string(hour[current_hour]) + ":" + string(minute[current_minute])
 
 ini_open("data.ini")
-ini_write_string("time",_id,_time)
+ini_write_string("time",_id,time)
 ini_close()
