@@ -1,4 +1,4 @@
-restartbuffer = buffer_create(1024,buffer_fixed,1)
+var restartbuffer = buffer_create(1024,buffer_fixed,1)
 
 var restartmessage, j
 restartmessage = ""

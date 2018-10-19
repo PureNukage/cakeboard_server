@@ -1,4 +1,4 @@
-buffer_server_totalusers = buffer_create(1024,buffer_fixed,1)
+var buffer_server_totalusers = buffer_create(1024,buffer_fixed,1)
 
 buffer_seek(buffer_server_totalusers,buffer_seek_start,0)
 buffer_write(buffer_server_totalusers,buffer_u8,0)

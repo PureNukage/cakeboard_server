@@ -9,6 +9,7 @@ switch (type_event)
     break;
     case network_type_disconnect:
         // Remove client
+		show_message("disconnected")
         var socket = ds_map_find_value(async_load,"socket")
         var findsocket = ds_list_find_index(socketlist,socket)
 		if findsocket >= 0
